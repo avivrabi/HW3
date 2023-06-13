@@ -1,7 +1,7 @@
 import java.util.Iterator;
-//import java.lang.reflect.Method;
+import java.lang.reflect.Method;
 
-public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
+public class ArrayStack<E extends Cloneable> implements Stack<E> {
     int max_size;
     int head_index = -1; // last cell that contains data
     Cloneable[] stack;
@@ -25,24 +25,23 @@ public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
     }
 
     @Override
-    public Cloneable pop() {
+    public E pop() {
         if (!isEmpty()){
             E temp = cloneElement((E)stack[head_index]);
             stack[head_index--] = null;
             return temp;
         }
-        else throw new EmptyStackException2();
+        else throw new EmptyStackException();
 
     }
 
     @Override
-    public Cloneable peek() {
+    public E peek() {
         if(!isEmpty()) {
             return cloneElement((E)stack[head_index]);
         }
         else {
-            //TODO: change exception name
-            throw new EmptyStackException2();
+            throw new EmptyStackException();
         }
     }
 
@@ -56,11 +55,12 @@ public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
         return head_index < 0;
     }
 
+
     @Override
-    public Stack<Cloneable> clone() {
+    public ArrayStack<E> clone() {
         try {
             ArrayStack temp = (ArrayStack) super.clone();
-            for (int i = 0; i < max_size; i++) {
+            for (int i = 0; i < head_index; i++) {
                 temp.stack[i] = cloneElement((E)this.stack[i]);
             }
             return temp;
@@ -72,14 +72,24 @@ public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
     private E cloneElement(E element) {
         try {
             return (E) element.getClass().getMethod("clone").invoke(element);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exception) {
+            return null;
         }
-        catch (NoSuchMethodException | IllegalAccessException exception) {return null;}
     }
 
 
+
+//    private E cloneElement(E element) {
+//        try {
+//            return (E) element.getClass().getMethod("clone").invoke(element);
+//        }
+//        catch (NoSuchMethodException | IllegalAccessException exception) {return null;}
+//    }
+
+
     @Override
-    public Iterator<Cloneable> iterator() {
-        return new StackIterator();
+    public ArrayStackIterator iterator() {
+        return new ArrayStackIterator();
     }
 
 
@@ -88,7 +98,7 @@ public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
 
         @Override
         public boolean hasNext() {
-            return index - 1 >= 0;
+            return index >= 0;
         }
 
         @Override
