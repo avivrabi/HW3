@@ -1,3 +1,4 @@
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.lang.reflect.Method;
 
@@ -93,7 +94,7 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     }
 
 
-    private class StackIterator implements Iterator {
+    private class ArrayStackIterator implements Iterator {
         private int index = head_index;
 
         @Override
