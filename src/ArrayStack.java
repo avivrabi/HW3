@@ -25,8 +25,14 @@ public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
     }
 
     @Override
-    public E pop() {
-        return null;
+    public Cloneable pop() {
+        if (!isEmpty()){
+            E temp = cloneElement((E)stack[head_index]);
+            stack[head_index--] = null;
+            return temp;
+        }
+        else throw new EmptyStackException2();
+
     }
 
     @Override
