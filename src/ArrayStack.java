@@ -17,7 +17,7 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     }
 
     @Override
-    public void push(Cloneable element) {
+    public void push(E element) {
         if(head_index + 1 < max_size) {
             stack[++head_index] = element;
             // TODO: make sure that it does +1 head index
@@ -28,7 +28,8 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     @Override
     public E pop() {
         if (!isEmpty()){
-            E temp = cloneElement((E)stack[head_index]);
+            E temp = (E)stack[head_index];
+            //E temp = cloneElement((E)stack[head_index]);
             stack[head_index--] = null;
             return temp;
         }
@@ -39,7 +40,8 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     @Override
     public E peek() {
         if(!isEmpty()) {
-            return cloneElement((E)stack[head_index]);
+            return (E)stack[head_index];
+            //return cloneElement((E)stack[head_index]);
         }
         else {
             throw new EmptyStackException();
@@ -61,7 +63,8 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     public ArrayStack<E> clone() {
         try {
             ArrayStack temp = (ArrayStack) super.clone();
-            for (int i = 0; i < head_index; i++) {
+            temp.stack = new Cloneable[this.max_size];
+            for (int i = 0; i <= head_index; i++) {
                 temp.stack[i] = cloneElement((E)this.stack[i]);
             }
             return temp;
@@ -79,22 +82,13 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     }
 
 
-
-//    private E cloneElement(E element) {
-//        try {
-//            return (E) element.getClass().getMethod("clone").invoke(element);
-//        }
-//        catch (NoSuchMethodException | IllegalAccessException exception) {return null;}
-//    }
-
-
     @Override
     public ArrayStackIterator iterator() {
         return new ArrayStackIterator();
     }
 
 
-    private class ArrayStackIterator implements Iterator {
+    private class ArrayStackIterator implements Iterator<E> {
         private int index = head_index;
 
         @Override
@@ -103,8 +97,8 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
         }
 
         @Override
-        public Cloneable next() {
-            return stack[index--];
+        public E next() {
+            return (E)stack[index--];
         }
     }
 
