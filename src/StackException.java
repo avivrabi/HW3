@@ -1,3 +1,6 @@
+/**
+ * This is the main exception to all stack related exceptions we defined
+ */
 public class StackException extends RuntimeException {
 
     public StackException() {}

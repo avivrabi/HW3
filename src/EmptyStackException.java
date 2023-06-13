@@ -1,3 +1,6 @@
+/**
+ * This exception will be thrown when trying to approach an empty stack
+ */
 public class EmptyStackException extends StackException{
     public EmptyStackException() {}
 
