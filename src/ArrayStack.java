@@ -1,24 +1,27 @@
 import java.util.Iterator;
+//import java.lang.reflect.Method;
 
-public class ArrayStack<E extends Cloneable> implements Stack<E> {
-    // size will be received from builder
-    // need to throw exception if max_size < 0
+public class ArrayStack<E extends Cloneable> implements Stack<Cloneable> {
     int max_size;
     int head_index = -1; // last cell that contains data
-
     Cloneable[] stack;
 
-    /**
-     * Constructor
-     * @param max_size
-     */
+
     public ArrayStack(int max_size) {
-        this.max_size = max_size;
+        if(max_size >= 0) {
+            this.max_size = max_size;
+            this.stack = new Cloneable[max_size];
+        }
+        else throw new NegativeCapacityException();
     }
+
     @Override
     public void push(Cloneable element) {
-        //TODO: change this func
-        int x=1;
+        if(head_index + 1 < max_size) {
+            stack[++head_index] = element;
+            // TODO: make sure that it does +1 head index
+        }
+        else throw new StackOverflowException();
     }
 
     @Override
@@ -27,12 +30,12 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     }
 
     @Override
-    public E peek() {
+    public Cloneable peek() {
         if(!isEmpty()) {
-            return (E) stack[this.head_index];
-            //TODO: why it's marked??
+            return cloneElement((E)stack[head_index]);
         }
         else {
+            //TODO: change exception name
             throw new EmptyStackException2();
         }
     }
@@ -48,25 +51,44 @@ public class ArrayStack<E extends Cloneable> implements Stack<E> {
     }
 
     @Override
-    public Stack clone() {
-        // try catch
-        // clue: use invoke
-        return null;
-    }
-    public class StackIterator<T> implements Iterator{
-        @Override
-        public Iterator iterator() {
+    public Stack<Cloneable> clone() {
+        try {
+            ArrayStack temp = (ArrayStack) super.clone();
+            for (int i = 0; i < max_size; i++) {
+                temp.stack[i] = cloneElement((E)this.stack[i]);
+            }
+            return temp;
+        } catch (StackException | CloneNotSupportedException exception) {
             return null;
         }
+    }
+
+    private E cloneElement(E element) {
+        try {
+            return (E) element.getClass().getMethod("clone").invoke(element);
+        }
+        catch (NoSuchMethodException | IllegalAccessException exception) {return null;}
+    }
+
+
+    @Override
+    public Iterator<Cloneable> iterator() {
+        return new StackIterator();
+    }
+
+
+    private class StackIterator implements Iterator {
+        private int index = head_index;
 
         @Override
         public boolean hasNext() {
-            return false;
+            return index - 1 >= 0;
         }
 
         @Override
-        public Object next() {
-            return null;
+        public Cloneable next() {
+            return stack[index--];
         }
     }
+
 }
