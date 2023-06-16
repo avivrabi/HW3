@@ -14,13 +14,45 @@ public class Playlist implements Cloneable, Iterable<Song> {
     }
 
     public void addSong(Song newSong) {
-        if (!this.inPlaylist(newSong)) {
-            head = new SNode(newSong, head);
-        }
-        else {
+        if (!inPlaylist(newSong)) {
+            SNode newTail = new SNode(newSong, null);
+            if (tail != null) {
+                tail.nextSong = newTail;
+            } else {
+                head = newTail;
+            }
+            tail = newTail;
+        } else {
             throw new SongAlreadyExistsException();
         }
     }
+
+//TODO: something after lunch!
+    /*
+    public void addSong(Song newSong) {
+        if (!this.inPlaylist(newSong)) {
+
+            SNode newTail = new SNode(newSong, null);
+            this.tail.nextSong = newTail;
+            this.tail = newTail;
+
+
+        } else {
+            throw new SongAlreadyExistsException();
+        }
+    }
+
+     */
+
+//    public void addSong(Song newSong) {
+//        if (!this.inPlaylist(newSong)) {
+//            head = new SNode(newSong, head);
+//        }
+//        else {
+//            throw new SongAlreadyExistsException();
+//        }
+//    }
+
 
 
     public boolean inPlaylist(Song candidate) {

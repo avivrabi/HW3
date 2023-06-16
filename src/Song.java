@@ -26,36 +26,48 @@ public class Song implements Cloneable {
     public String toString() { // TODO: check
         int minute = duration / 60;
         int seconds= duration % 60;
-        String secondsFormat = seconds<10 ? "0"+seconds : ""+seconds;
-        String formatDuration= minute + ":" + secondsFormat;
-        return "(" + songName.toString() + "," + artist.toString() + "," + genre.toString() + ","
-                + formatDuration + ")";
+        StringBuilder formatDuration = new StringBuilder(minute+":");
+        formatDuration.append(seconds<10 ? "0" + seconds : seconds);
+        return songName + ", " + artist+ ", " + genre.toString() + ", " + formatDuration;
     }
     @Override
     public boolean equals(Object other){
-        if(other instanceof Song){return ((Song) other).songName.equals(this.songName)
-                && ((Song) other).artist.equals(this.artist);}
+        if(other instanceof Song){
+            return ((Song) other).songName.equals(this.songName)
+                && ((Song) other).artist.equals(this.artist);
+        }
         return false;
     }
 
     /**
-     * using the utility of prime number to ensure a unique hashcode depend on the name and artist of this song only
-     * @return a uniform integer to every equal songs and different if not
+     * Calculates a hash code for a given song considering it's name and artist.
+     * @return a uniform integer to every equal songs
      */
     @Override
     public int hashCode() {
-        return 2* this.songName.hashCode()+ 3*this.artist.hashCode();
+        return 17 * this.songName.hashCode() + 31 * this.artist.hashCode(); //using prime number to raise the likelihood of unique hashcode
     }
 
     // TODO: finish clone - choose way
 //    @Override
 //    public Song clone(){
-//        return new Song(this);
+//        try {
+//            return new Song(this);
+//        }
+//        catch (CloneNotSupportedException e) {
+//           return null;
+//        }
+//
 //    }
     @Override
     public Song clone() {
         try {
-            return (Song) super.clone();
+
+            Song res = (Song) super.clone();
+            res.songName= new String(this.songName);
+            res.artist= new String(this.artist);
+            res.genre = this.genre;
+            return res;
         } catch (CloneNotSupportedException e) {
             return null;
         }
@@ -63,9 +75,8 @@ public class Song implements Cloneable {
     public void setDuration(int duration){
         if(duration<=0){ //TODO: check if a song duration can be 0
             System.out.println("illegal duration! erase me its not require");//TODO: comment it
-            return;
         }
-        this.duration=duration;
+        else this.duration=duration;
     }
 
     public enum Genre {
