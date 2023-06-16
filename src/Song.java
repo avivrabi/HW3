@@ -23,7 +23,7 @@ public class Song implements Cloneable {
 
 
     @Override
-    public String toString() {
+    public String toString() { // TODO: check
         int minute = duration / 60;
         int seconds= duration % 60;
         String secondsFormat = seconds<10 ? "0"+seconds : ""+seconds;
@@ -61,7 +61,7 @@ public class Song implements Cloneable {
         }
     }
     public void setDuration(int duration){
-        if(duration<=0){
+        if(duration<=0){ //TODO: check if a song duration can be 0
             System.out.println("illegal duration! erase me its not require");//TODO: comment it
             return;
         }

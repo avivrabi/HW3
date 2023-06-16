@@ -22,6 +22,7 @@ public class Playlist implements Cloneable, Iterable<Song> {
         }
     }
 
+
     public boolean inPlaylist(Song candidate) {
         for(Song s: this) {
             if (s.equals(candidate)) return true;
@@ -48,7 +49,7 @@ public class Playlist implements Cloneable, Iterable<Song> {
         while ( currNode.nextSong != null ){
             sb.append("(");
             sb.append(currNode.currSong.toString());
-            sb.append("),");
+            sb.append("), ");
             currNode = currNode.nextSong;
         }
 
@@ -74,46 +75,55 @@ public class Playlist implements Cloneable, Iterable<Song> {
             return true;
         }
         // if the playlist is empty or object don't share the same class
-        if (obj == null || getClass() != obj.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) { //TODO: check getClass
             return false;
         }
+
         Playlist other = (Playlist) obj;
-        Set<Song> thisSongSet = new HashSet<>();
-        SNode currentThis = head;
-        while (currentThis != null) {
-            thisSongSet.add(currentThis.currSong);
-            currentThis = currentThis.nextSong;
-        }
-        Set<Song> otherSongSet = new HashSet<>();
-        SNode currentOther = other.head;
-        while (currentOther != null) {
-            otherSongSet.add(currentOther.currSong);
-            currentOther = currentOther.nextSong;
-        }
+
+        Set<Song> thisSongSet = this.makeSet();
+        Set<Song> otherSongSet = other.makeSet();
+
         return thisSongSet.equals(otherSongSet);
     }
 
     /**
-     * Calculates a hash code for a given playlist
+     * Calculates a hash code for a given playlist set
      * @return playlist's hashcode
      */
     @Override
     public int hashCode() {
-        int hashCode = 0;
-        for(Song song: this) {
-            hashCode = 31 * hashCode + song.hashCode();
+        return this.makeSet().hashCode();
+    }
+
+    private Set<Song> makeSet() {
+        Set<Song> songSet = new HashSet<>();
+        for(Song s : this) {
+            songSet.add(s);
         }
-        return hashCode;
+        return songSet;
     }
 
     @Override
     public Playlist clone() {
         try {
-            Playlist clone = (Playlist) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+            // after the first clone we'll get the playlist tail to head
+            //Playlist reverseClonedPlaylist = (Playlist) super.clone();
+            Playlist reverseClonedPlaylist = new Playlist();
+            for(Song s: this) {
+                reverseClonedPlaylist.addSong(s.clone());
+            }
+            // cloned again to get the correct order
+            //Playlist clonedPlaylist = (Playlist) super.clone();
+            Playlist clonedPlaylist = new Playlist();
+            for(Song s: reverseClonedPlaylist) {
+                clonedPlaylist.addSong(s.clone());
+            }
+
+            return clonedPlaylist;
+        // CloneNotSupportedException
+        } catch (SongAlreadyExistsException e) {
+            return null;
         }
     }
 
