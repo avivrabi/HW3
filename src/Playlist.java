@@ -1,5 +1,6 @@
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class Playlist extends LinkedList<Song> implements Cloneable, Iterable<Song>, FilteredSongIterable<Song>, OrderedSongIterable {
@@ -65,7 +66,7 @@ public class Playlist extends LinkedList<Song> implements Cloneable, Iterable<So
             return true;
         }
         // if the playlist is empty or object don't share the same class
-        if (obj == null || getClass() != obj.getClass()) { //TODO: check getClass
+        if (obj == null || this.getClass() != obj.getClass()) { //TODO: check getClass
             return false;
         }
 
@@ -95,12 +96,12 @@ public class Playlist extends LinkedList<Song> implements Cloneable, Iterable<So
         try {
             Playlist clonedPlaylist = new Playlist();
 
-            for(Song s: this) {
-                clonedPlaylist.addSong(s.clone());
+            for (Song song : this) {
+                clonedPlaylist.addSong(song.clone());
             }
+
             return clonedPlaylist;
-        // CloneNotSupportedException
-        } catch (SongAlreadyExistsException e) {
+        } catch (InternalError e) {
             return null;
         }
     }
@@ -163,18 +164,11 @@ public class Playlist extends LinkedList<Song> implements Cloneable, Iterable<So
     @Override
     public void filterArtist(String artistName) {
         this.artistFilter = artistName;
-        if (artistFilter != null) {
-            filterFlag=true;
-        }
     }
     @Override
     public void filterGenre(Enum genre) {
         this.genreFilter = genre;
-        if (genreFilter != null) {
-            filterFlag=true;
         }
-
-    }
 
     @Override
     public void filterDuration(int duration) {

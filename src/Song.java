@@ -81,6 +81,9 @@ public class Song implements Cloneable {
     }
 
     public boolean conditionsExist(String artistFilter, Enum genreFilter, int durationFilter){
-        return (this.artist.equals(artistFilter) && this.genre.equals(genreFilter) && this.duration <= durationFilter);
+
+        return ((artistFilter == null || this.artist.equals(artistFilter)) &&
+                (genreFilter== null || this.genre.equals(genreFilter)) &&
+                this.duration <= durationFilter);
     }
 }
