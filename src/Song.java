@@ -49,16 +49,7 @@ public class Song implements Cloneable {
     }
 
     // TODO: finish clone - choose way
-//    @Override
-//    public Song clone(){
-//        try {
-//            return new Song(this);
-//        }
-//        catch (CloneNotSupportedException e) {
-//           return null;
-//        }
-//
-//    }
+
     @Override
     public Song clone() {
         try {

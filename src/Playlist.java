@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class Playlist implements Cloneable, Iterable<Song> {
+public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable<Song> {
 
     SNode head;
     SNode tail;
@@ -48,9 +48,19 @@ public class Playlist implements Cloneable, Iterable<Song> {
         boolean isFirst = true;
         for (Song s : this) {
             if (s.equals(song)) {
-                pointer.nextSong=pointer.nextSong.nextSong;
+                if (prevNode.nextSong != tail){
+                    prevNode.nextSong = prevNode.nextSong.nextSong;
+                }
+                else {
+                    prevNode.nextSong = null;
+                    tail = prevNode;
+                }
                 return true;
             }
+            if (!isFirst){
+                prevNode=prevNode.nextSong;
+            }
+            else isFirst=false;
         }
         return false;
     }
@@ -152,9 +162,18 @@ public class Playlist implements Cloneable, Iterable<Song> {
 
         @Override
         public Song next() {
-            pointer = currNode;
-            currNode = currNode.nextSong;
-            return new Song(currNode.currSong);
+            Song res;
+            if(filterFlag) { // if the flag is off it's mean we didn't change anny filter yet, therefore we can run normally
+                while (!currNode.currSong.conditionsExist(artistFilter, genreFilter, durationFilter)){
+                    currNode = currNode.nextSong; // inc to next node until find the one that fits with the filters conditions
+                }
+                res = new Song(currNode.currSong);
+            }
+            else {
+                res = new Song(currNode.currSong);
+                currNode = currNode.nextSong;
+            }
+            return res;
         }
     }
 

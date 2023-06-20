@@ -149,37 +149,37 @@ public class Main {
      * Checks numerous scans for a given playlist.
      */
 
-//    private static void checkScans(Playlist playlist, String[] artists, int[] durations) {
-//        System.out.println("Starts scanning...");
-//        for (Song song : playlist) {
-//            System.out.println(song);
-//            System.out.println("-----------------------------------");
-//        }
-//
-//        System.out.println("After initial scanning\n");
-//
-//        int i = 1;
-//
-//        for (Song.Genre genre : Song.Genre.values()) {
-//            for (int duration : durations) {
-//                for (String artist : artists) {
-//                    for (ScanningOrder order : ScanningOrder.values()) {
-//                        playlist.filterArtist(artist);
-//                        playlist.filterDuration(duration);
-//                        playlist.filterGenre(genre);
-//                        playlist.setScanningOrder(order);
-//                        System.out.println("Starting scan number " + i + " [" + genre + ", " + duration + ", " + artist + ", " + order + "]");
-//                        for (Song song : playlist) {
-//                            System.out.println(song);
-//                        }
-//                        System.out.println("After scan number " + i++ + ".\n");
-//                    }
-//                }
-//            }
-//        }
-//
-//        System.out.println("Done all scanning.");
-//    }
+    private static void checkScans(Playlist playlist, String[] artists, int[] durations) {
+        System.out.println("Starts scanning...");
+        for (Song song : playlist) {
+            System.out.println(song);
+            System.out.println("-----------------------------------");
+        }
+
+        System.out.println("After initial scanning\n");
+
+        int i = 1;
+
+        for (Song.Genre genre : Song.Genre.values()) {
+            for (int duration : durations) {
+                for (String artist : artists) {
+                    for (ScanningOrder order : ScanningOrder.values()) {
+                        playlist.filterArtist(artist);
+                        playlist.filterDuration(duration);
+                        playlist.filterGenre(genre);
+                        //playlist.setScanningOrder(order);
+                        System.out.println("Starting scan number " + i + " [" + genre + ", " + duration + ", " + artist + ", " + order + "]");
+                        for (Song song : playlist) {
+                            System.out.println(song);
+                        }
+                        System.out.println("After scan number " + i++ + ".\n");
+                    }
+                }
+            }
+        }
+
+        System.out.println("Done all scanning.");
+    }
 
     /**
      * Tests for part B.
