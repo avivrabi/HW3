@@ -2,16 +2,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable<Song> {
+public class Playlist extends LinkedList<Song> implements Cloneable, Iterable<Song>, FilteredSongIterable<Song>, OrderedSongIterable {
 
-    SNode head;
-    SNode tail;
-
-    //filters for scanning
+    // filters for scanning
     private String artistFilter;
     private Enum genreFilter;
     private int durationFilter = Integer.MAX_VALUE;
-    private boolean filterFlag=false;
+
+    private Enum scanningOrder = ScanningOrder.ADDING;
 
 
     public Playlist() {
@@ -19,18 +17,12 @@ public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable
 
     public void addSong(Song newSong) {
         if (!inPlaylist(newSong)) {
-            SNode newTail = new SNode(newSong, null);
-            if (tail != null) {
-                tail.nextSong = newTail;
-            } else {
-                head = newTail;
-            }
-            tail = newTail;
-        } else {
+            super.addLast(newSong);
+        }
+        else {
             throw new SongAlreadyExistsException();
         }
     }
-
 
 
     public boolean inPlaylist(Song candidate) {
@@ -40,52 +32,25 @@ public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable
         return false;
     }
 
-
     public boolean removeSong(Song song) {
-    //TODO: dangerous - may be a null pointer if we want to remove last
-        //TODO: check again after changing order
-        SNode prevNode = head;
-        boolean isFirst = true;
-        for (Song s : this) {
-            if (s.equals(song)) {
-                if (prevNode.nextSong != tail){
-                    prevNode.nextSong = prevNode.nextSong.nextSong;
-                }
-                else {
-                    prevNode.nextSong = null;
-                    tail = prevNode;
-                }
-                return true;
-            }
-            if (!isFirst){
-                prevNode=prevNode.nextSong;
-            }
-            else isFirst=false;
-        }
-        return false;
+        return super.remove(song);
     }
-
-
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
-        SNode currNode = head;
-        while ( currNode.nextSong != null ){
+        for (Song s: this){
             sb.append("(");
-            sb.append(currNode.currSong.toString());
-            sb.append("), ");
-            currNode = currNode.nextSong;
+            sb.append(s.toString());
+            if(s!= this.getLast()){
+                sb.append("), ");
+            }
+            else sb.append(")]");
         }
 
-        // add tail
-        sb.append("(");
-        sb.append(currNode.currSong.toString());
-        sb.append(")");
-
-        sb.append("]");
         return sb.toString();
     }
+
 
     /**
      * Compares between two playlists to check if equal.
@@ -122,11 +87,7 @@ public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable
     }
 
     private Set<Song> makeSet() {
-        Set<Song> songSet = new HashSet<>();
-        for(Song s : this) {
-            songSet.add(s);
-        }
-        return songSet;
+        return new HashSet<>(this);
     }
 
     @Override
@@ -145,39 +106,60 @@ public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable
     }
 
 
+
+    @Override
+    public void setScanningOrder(Enum order) {
+        this.scanningOrder = order;
+    }
+
+
     @Override
     public Iterator<Song> iterator() {
         return new PlaylistIterator();
     }
 
+    private class PlaylistIterator implements Iterator<Song> {
+        private Playlist sortedPlaylist= new Playlist();
+        private Iterator<Song> songIterator = Playlist.super.iterator();
+        private Song nextSong;
 
-    public class PlaylistIterator implements Iterator<Song> {
-        SNode currNode = head;
+        public PlaylistIterator() {
+            findNextSong();
+        }
+
+        private void findNextSong() {
+            while (songIterator.hasNext()) {
+                Song song = songIterator.next();
+                if (filterMatches(song)) {
+                    nextSong = song;
+                    return;
+                }
+            }
+            nextSong = null;
+        }
+
+        private boolean filterMatches(Song song) {
+            if (artistFilter != null && !song.artist.equals(artistFilter))
+                return false;
+            if (genreFilter != null && song.genre != genreFilter)
+                return false;
+            return song.duration <= durationFilter;
+        }
 
         @Override
         public boolean hasNext() {
-            return !(currNode == null);
-            // || currNode.nextSong == null
+            return nextSong != null;
         }
 
         @Override
         public Song next() {
-            Song res;
-            if(filterFlag) { // if the flag is off it's mean we didn't change anny filter yet, therefore we can run normally
-                while (!currNode.currSong.conditionsExist(artistFilter, genreFilter, durationFilter)){
-                    currNode = currNode.nextSong; // inc to next node until find the one that fits with the filters conditions
-                }
-                res = new Song(currNode.currSong);
-            }
-            else {
-                res = new Song(currNode.currSong);
-                currNode = currNode.nextSong;
-            }
-            return res;
+            Song currentSong = nextSong;
+            findNextSong();
+            return currentSong;
         }
+
     }
 
-    // filter funcs are basicly setters that also turn on the flag
     @Override
     public void filterArtist(String artistName) {
         this.artistFilter = artistName;
@@ -197,9 +179,6 @@ public class Playlist implements Cloneable, Iterable<Song>, FilteredSongIterable
     @Override
     public void filterDuration(int duration) {
         this.durationFilter = duration;
-        if (duration < Integer.MAX_VALUE) {
-            filterFlag=true;
-        }
     }
 }
 

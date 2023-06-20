@@ -1,6 +1,5 @@
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
-import java.lang.reflect.Method;
 
 /**
  * Represent a stack as an array
