@@ -6,10 +6,14 @@ public class Playlist implements Cloneable, Iterable<Song> {
 
     SNode head;
     SNode tail;
-    SNode pointer;
-    int size = 0;
 
-    // constructor - should stay empty or at least not get anything
+    //filters for scanning
+    private String artistFilter;
+    private Enum genreFilter;
+    private int durationFilter = Integer.MAX_VALUE;
+    private boolean filterFlag=false;
+
+
     public Playlist() {
     }
 
@@ -27,32 +31,6 @@ public class Playlist implements Cloneable, Iterable<Song> {
         }
     }
 
-//TODO: something after lunch!
-    /*
-    public void addSong(Song newSong) {
-        if (!this.inPlaylist(newSong)) {
-
-            SNode newTail = new SNode(newSong, null);
-            this.tail.nextSong = newTail;
-            this.tail = newTail;
-
-
-        } else {
-            throw new SongAlreadyExistsException();
-        }
-    }
-
-     */
-
-//    public void addSong(Song newSong) {
-//        if (!this.inPlaylist(newSong)) {
-//            head = new SNode(newSong, head);
-//        }
-//        else {
-//            throw new SongAlreadyExistsException();
-//        }
-//    }
-
 
 
     public boolean inPlaylist(Song candidate) {
@@ -64,7 +42,10 @@ public class Playlist implements Cloneable, Iterable<Song> {
 
 
     public boolean removeSong(Song song) {
-    //TODO: dangerous
+    //TODO: dangerous - may be a null pointer if we want to remove last
+        //TODO: check again after changing order
+        SNode prevNode = head;
+        boolean isFirst = true;
         for (Song s : this) {
             if (s.equals(song)) {
                 pointer.nextSong=pointer.nextSong.nextSong;
@@ -73,6 +54,8 @@ public class Playlist implements Cloneable, Iterable<Song> {
         }
         return false;
     }
+
+
 
     @Override
     public String toString() {
@@ -139,19 +122,11 @@ public class Playlist implements Cloneable, Iterable<Song> {
     @Override
     public Playlist clone() {
         try {
-            // after the first clone we'll get the playlist tail to head
-            //Playlist reverseClonedPlaylist = (Playlist) super.clone();
-            Playlist reverseClonedPlaylist = new Playlist();
-            for(Song s: this) {
-                reverseClonedPlaylist.addSong(s.clone());
-            }
-            // cloned again to get the correct order
-            //Playlist clonedPlaylist = (Playlist) super.clone();
             Playlist clonedPlaylist = new Playlist();
-            for(Song s: reverseClonedPlaylist) {
+
+            for(Song s: this) {
                 clonedPlaylist.addSong(s.clone());
             }
-
             return clonedPlaylist;
         // CloneNotSupportedException
         } catch (SongAlreadyExistsException e) {
@@ -165,12 +140,14 @@ public class Playlist implements Cloneable, Iterable<Song> {
         return new PlaylistIterator();
     }
 
+
     public class PlaylistIterator implements Iterator<Song> {
         SNode currNode = head;
 
         @Override
         public boolean hasNext() {
-            return !(currNode == null || currNode.nextSong == null);
+            return !(currNode == null);
+            // || currNode.nextSong == null
         }
 
         @Override
@@ -180,4 +157,31 @@ public class Playlist implements Cloneable, Iterable<Song> {
             return new Song(currNode.currSong);
         }
     }
+
+    // filter funcs are basicly setters that also turn on the flag
+    @Override
+    public void filterArtist(String artistName) {
+        this.artistFilter = artistName;
+        if (artistFilter != null) {
+            filterFlag=true;
+        }
+    }
+    @Override
+    public void filterGenre(Enum genre) {
+        this.genreFilter = genre;
+        if (genreFilter != null) {
+            filterFlag=true;
+        }
+
+    }
+
+    @Override
+    public void filterDuration(int duration) {
+        this.durationFilter = duration;
+        if (duration < Integer.MAX_VALUE) {
+            filterFlag=true;
+        }
+    }
 }
+
+

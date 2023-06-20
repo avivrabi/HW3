@@ -68,6 +68,7 @@ public class Song implements Cloneable {
             res.artist= new String(this.artist);
             res.genre = this.genre;
             return res;
+
         } catch (CloneNotSupportedException e) {
             return null;
         }
@@ -86,5 +87,9 @@ public class Song implements Cloneable {
         COUNTRY,
         JAZZ,
         DISCO
+    }
+
+    public boolean conditionsExist(String artistFilter, Enum genreFilter, int durationFilter){
+        return (this.artist.equals(artistFilter) && this.genre.equals(genreFilter) && this.duration <= durationFilter);
     }
 }

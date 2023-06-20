@@ -269,6 +269,8 @@ public class Main {
 
         boolean result = playlist3.removeSong(song3);
         System.out.println("Remove result: " + result);
+
+
         System.out.println("playlist3: " + playlist3);
         System.out.println("Is playlist1 equal to playlist3? " + playlist1.equals(playlist3));
 
@@ -303,8 +305,8 @@ public class Main {
         String[] artists = {"ABBA", null, "Backstreet Boys"};
         int[] durations = {-10, 0, 200, 900};
 
-        //checkScans(playlist1, artists, durations);
-        //checkScans(playlist3, artists, durations);
+        checkScans(playlist1, artists, durations);
+        checkScans(playlist3, artists, durations);
 
         System.out.println("\nTesting of part B is over!");
     }
